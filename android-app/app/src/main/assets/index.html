@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Kaizu</title>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  --ink: #0f172a;
+  --ink-soft: #334155;
+  --muted: #64748b;
+  --muted-light: #94a3b8;
+  --line: #e2e8f0;
+  --line-light: #f1f5f9;
+  --paper: #f8fafc;
+  --panel: #ffffff;
+  --brand: #0284c7;
+  --brand-dark: #0369a1;
+  --brand-light: #e0f2fe;
+  --brand-2: #0d9488;
+  --brand-2-light: #ccfbf1;
+  --accent: #f59e0b;
+  --accent-light: #fef3c7;
+  --danger: #dc2626;
+  --danger-light: #fee2e2;
+  --success: #16a34a;
+  --success-light: #dcfce7;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  background: var(--paper);
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+button, input, textarea { font: inherit; transition: border-color 0.2s ease, background-color 0.2s ease; }
+button { cursor: pointer; }
+a { color: inherit; text-decoration: none; transition: color 0.2s ease, background-color 0.2s ease, transform 0.15s ease; }
+
+.link-btn { display: inline-grid; place-items: center; }
+.app-shell { display: grid; grid-template-columns: 300px minmax(0, 1fr); min-height: 100vh; }
+
+.sidebar { display: flex; flex-direction: column; gap: 16px; padding: 24px 20px; background: var(--panel); border-right: 1px solid var(--line); }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-mark { display: grid; width: 42px; height: 42px; place-items: center; border-radius: var(--radius-sm); color: #fff; background: linear-gradient(135deg, var(--brand), var(--brand-2)); font-weight: 900; font-size: 0.85rem; letter-spacing: 0.5px; }
+.brand h1, .brand p, .topbar h2, .topbar p { margin: 0; }
+.brand h1 { font-size: 1.15rem; font-weight: 800; color: var(--ink); }
+.sidebar form:has(.primary-action) { display: flex; justify-content: flex-start; }
+.sidebar .primary-action { padding: 12px 28px; }
+.brand p, .eyebrow, .stats-strip p, .prompt-box p, .notes-tips p { color: var(--muted); }
+.eyebrow { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; }
+
+.primary-action, .ghost-btn, .danger-btn, .icon-btn, .rating-row button, .tab { min-height: 42px; border: 1px solid transparent; border-radius: var(--radius-sm); font-weight: 700; }
+.primary-action, .ghost-btn, .danger-btn, .tab, .icon-btn { text-decoration: none; }
+.primary-action { color: #fff; background: linear-gradient(135deg, var(--brand), var(--brand-dark)); border: none; }
+.primary-action:hover { transform: translateY(-1px); }
+.primary-action:active { transform: translateY(0); }
+.primary-action.compact, .ghost-btn, .danger-btn { padding: 0 20px; }
+.ghost-btn, .icon-btn, .rating-row button { color: var(--ink-soft); background: var(--panel); border-color: var(--line); }
+.ghost-btn:hover, .icon-btn:hover, .rating-row button:hover { background: var(--line-light); border-color: var(--muted-light); }
+.danger-btn { color: #fff; background: var(--danger); border-color: var(--danger); }
+.danger-btn:hover { background: #b91c1c; transform: translateY(-1px); }
+.danger-btn:active { transform: translateY(0); }
+
+.set-list-header { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; padding: 0 2px; }
+.set-list { display: grid; gap: 8px; overflow: auto; }
+.set-item { display: grid; gap: 4px; width: 100%; padding: 14px; text-align: left; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-md); transition: all 0.2s ease; cursor: pointer; }
+.set-item:hover { background: var(--panel); border-color: var(--brand); transform: translateX(2px); }
+.set-item.active { background: var(--brand-light); border-color: var(--brand); border-left: 3px solid var(--brand); }
+.set-item strong, .set-item span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.set-item strong { font-size: 0.92rem; }
+.set-item span { color: var(--muted); font-size: 0.82rem; }
+
+.workspace { min-width: 0; padding: 28px clamp(20px, 4vw, 52px); }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.topbar h2 { font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 800; color: var(--ink); }
+.topbar-actions, .test-toolbar, .card-controls, .rating-row, .terms-header, .mode-tabs { display: flex; align-items: center; gap: 10px; }
+
+.mode-tabs { margin-top: 20px; overflow-x: auto; padding-bottom: 4px; gap: 6px; scrollbar-width: none; }
+.mode-tabs::-webkit-scrollbar { display: none; }
+.tab { flex: 0 0 auto; padding: 0 20px; color: var(--muted); background: transparent; border-radius: 100px; font-size: 0.88rem; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; }
+.tab:hover { color: var(--ink); background: var(--line-light); }
+.tab.active { color: #fff; background: linear-gradient(135deg, var(--brand-2), #059669); }
+
+.stats-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 20px 0; }
+.stats-strip div { padding: 18px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-md); transition: transform 0.2s ease; }
+.stats-strip div:hover { transform: translateY(-2px); }
+.stats-strip span { display: block; font-size: 1.6rem; font-weight: 900; color: var(--brand); line-height: 1.2; }
+.stats-strip p { margin: 4px 0 0; font-size: 0.82rem; font-weight: 600; }
+
+.panel { display: none; background: transparent; }
+.panel.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.add-card-form { margin-top: 14px; }
+
+.study-stage, .task-layout, .set-form, .test-list, .notes-grid { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-lg); }
+.study-stage { display: grid; gap: 20px; padding: clamp(20px, 4vw, 36px); }
+
+.flashcard-scene { perspective: 1000px; cursor: pointer; }
+.flashcard { position: relative; min-height: 340px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: linear-gradient(145deg, #ffffff 0%, #f0fdfa 50%, #ecfdf5 100%); outline: none; transition: transform 0.5s ease; transform-style: preserve-3d; }
+.flashcard.flipped { transform: rotateY(180deg); }
+.flashcard-face { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: grid; place-items: center; padding: 32px; max-width: 100%; text-align: center; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: var(--radius-lg); }
+.flashcard-front { background: linear-gradient(145deg, #ffffff 0%, #f0fdfa 50%, #ecfdf5 100%); }
+.flashcard-back { background: linear-gradient(145deg, #ecfdf5 0%, #f0fdfa 50%, #ffffff 100%); transform: rotateY(180deg); }
+.flashcard-face p { margin: 0 0 16px; color: var(--accent); font-weight: 800; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1.5px; }
+.flashcard-face strong { overflow-wrap: anywhere; font-size: clamp(1.6rem, 5vw, 3rem); line-height: 1.2; color: var(--ink); }
+.card-controls { justify-content: center; }
+.icon-btn { width: 44px; font-size: 1.6rem; border-radius: 50%; }
+.icon-btn:hover { transform: scale(1.1); }
+
+.task-layout, .set-form { display: grid; gap: 20px; padding: 24px; }
+.prompt-box { padding: 24px; border: 1px solid var(--line-light); border-radius: var(--radius-md); background: linear-gradient(135deg, var(--paper), var(--brand-light)); }
+.prompt-box h3 { margin: 0; overflow-wrap: anywhere; font-size: clamp(1.3rem, 3vw, 2rem); font-weight: 800; line-height: 1.3; }
+.prompt-box p { margin: 0 0 10px; font-size: 0.88rem; font-weight: 600; }
+.answer-form, .field-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; }
+
+input, textarea { width: 100%; padding: 12px 16px; color: var(--ink); background: var(--panel); border: 1.5px solid var(--line); border-radius: var(--radius-sm); outline-color: var(--brand); }
+input:focus, textarea:focus { border-color: var(--brand); }
+input::placeholder, textarea::placeholder { color: var(--muted-light); }
+textarea { min-height: 270px; resize: vertical; }
+
+.feedback, .review-answer, #testScore { min-height: 28px; color: var(--muted); font-weight: 700; font-size: 0.9rem; }
+.feedback:not(:empty) { color: var(--success); }
+
+.rating-row { flex-wrap: wrap; }
+.rating-row button { flex: 1 1 110px; }
+.rating-row button:first-child { color: var(--danger); border-color: var(--danger-light); }
+.rating-row button:first-child:hover { background: var(--danger-light); }
+.rating-row button:nth-child(2) { color: var(--accent); border-color: var(--accent-light); }
+.rating-row button:nth-child(2):hover { background: var(--accent-light); }
+.rating-row button:nth-child(3) { color: var(--brand-2); border-color: var(--brand-2-light); }
+.rating-row button:nth-child(3):hover { background: var(--brand-2-light); }
+.rating-row button:last-child { color: var(--success); border-color: var(--success-light); }
+.rating-row button:last-child:hover { background: var(--success-light); }
+.wide { width: 100%; }
+
+.test-toolbar { margin-bottom: 14px; }
+.test-list { display: grid; gap: 16px; padding: 22px; }
+.question { display: grid; gap: 10px; padding-bottom: 16px; border-bottom: 1px solid var(--line-light); }
+.question:last-child { border-bottom: 0; padding-bottom: 0; }
+.question strong { font-size: 0.95rem; }
+.question strong, .question label { overflow-wrap: anywhere; }
+.question input:not([type="hidden"]) { background: var(--paper); }
+
+.notes-grid { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 20px; padding: 24px; }
+.notes-editor { display: grid; gap: 14px; }
+.notes-editor label, .field-row label { display: grid; gap: 8px; font-weight: 700; font-size: 0.88rem; }
+.field-row label { color: var(--ink-soft); }
+.notes-tips { padding: 20px; border: 1px solid var(--line); border-radius: var(--radius-md); background: linear-gradient(135deg, #fffbeb, #fef3c7); align-self: start; }
+.notes-tips h3 { margin-top: 0; font-size: 1rem; color: var(--ink); }
+.notes-tips p { font-size: 0.88rem; line-height: 1.6; }
+
+.terms-header { justify-content: space-between; margin-top: 4px; }
+.terms-header h3 { margin: 0; }
+.terms-table { display: grid; gap: 10px; }
+.term-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 44px; gap: 10px; align-items: center; }
+.term-row input:not([type="hidden"]) { background: var(--paper); }
+
+@media (max-width: 900px) {
+  .app-shell { grid-template-columns: 1fr; }
+  .sidebar { border-right: 0; border-bottom: 1px solid var(--line); padding: 16px 20px; gap: 12px; }
+  .set-list { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+  .set-list::-webkit-scrollbar { display: none; }
+  .set-item { flex: 0 0 auto; min-width: 180px; padding: 10px 14px; }
+  .set-item.active { border-left: 1px solid var(--brand); border-bottom: 3px solid var(--brand); }
+  .topbar { display: grid; gap: 12px; }
+  .topbar-actions, .answer-form, .field-row, .notes-grid, .term-row { grid-template-columns: 1fr; }
+  .topbar, .topbar-actions { align-items: stretch; }
+  .topbar-actions { justify-content: stretch; }
+  .topbar-actions .ghost-btn, .topbar-actions .danger-btn { flex: 1; }
+  .stats-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .notes-grid { grid-template-columns: 1fr; }
+  .notes-tips { order: 1; }
+}
+
+@media (max-width: 520px) {
+  .workspace { padding: 16px; }
+  .sidebar { padding: 14px 16px; }
+  .brand-mark { width: 36px; height: 36px; font-size: 0.75rem; }
+  .brand h1 { font-size: 1rem; }
+  .stats-strip span { font-size: 1.3rem; }
+  .flashcard { min-height: 260px; padding: 24px 20px; }
+  .flashcard-face strong { font-size: clamp(1.3rem, 6vw, 2rem); }
+  .study-stage, .task-layout, .set-form, .test-list, .notes-grid { padding: 16px; border-radius: var(--radius-md); }
+  .prompt-box { padding: 18px; }
+  .prompt-box h3 { font-size: clamp(1.15rem, 4vw, 1.6rem); }
+  .tab { padding: 0 16px; font-size: 0.84rem; min-height: 38px; }
+  .mode-tabs { gap: 4px; margin-top: 16px; }
+  .answer-form button, .primary-action.compact { min-height: 46px; }
+  .rating-row button { min-height: 44px; font-size: 0.85rem; }
+  .topbar h2 { font-size: 1.35rem; }
+  .icon-btn { width: 40px; height: 40px; }
+  .term-row { gap: 8px; }
+}
+
+.sidebar::-webkit-scrollbar, .set-list::-webkit-scrollbar { width: 4px; height: 4px; }
+.sidebar::-webkit-scrollbar-track, .set-list::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb, .set-list::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+::selection { background: var(--brand-light); color: var(--brand-dark); }
+  </style>
+</head>
+<body>
+  <div id="app" class="app-shell"></div>
+
+<script>
+const DAY = 86400;
+const STORAGE_KEY = 'kaizu_data';
+
+function uuid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0;
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+}
+
+function makeCard(term = '', definition = '') {
+  return { id: uuid(), term, definition, interval: 0, ease: 2.5, due: Math.floor(Date.now() / 1000), correct: 0, attempts: 0 };
+}
+
+function sampleData() {
+  const firstSet = { id: uuid(), title: 'Xin chào', subject: 'Tiếng Anh', notes: 'Xin chào', cards: [makeCard('Hello World', 'Chào thế giới')] };
+  return { active_set_id: firstSet.id, sets: [firstSet] };
+}
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return saveData(sampleData());
+    const data = JSON.parse(raw);
+    if (!data.sets || !data.sets.length) return saveData(sampleData());
+    return data;
+  } catch { return saveData(sampleData()); }
+}
+
+function saveData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  return data;
+}
+
+function findSet(data, setId) {
+  for (const s of data.sets) if (s.id === setId) return s;
+  return data.sets[0];
+}
+
+function findCard(studySet, cardId) {
+  for (const c of studySet.cards) if (c.id === cardId) return c;
+  return null;
+}
+
+function dueCards(studySet) {
+  const now = Math.floor(Date.now() / 1000);
+  return studySet.cards.filter(c => (c.due || 0) <= now);
+}
+
+function normalize(v) {
+  return v.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim();
+}
+
+function closeAnswer(value, answer) {
+  const a = normalize(value), b = normalize(answer);
+  return a && b && (a.includes(b) || b.includes(a));
+}
+
+function esc(s) { var t = document.createElement('div'); t.appendChild(document.createTextNode(s || '')); return t.innerHTML; }
+
+let data = loadData();
+let currentMode = 'cards';
+let currentSetId = data.active_set_id;
+let feedbackMsg = '';
+let expectedAnswer = '';
+let testScore = '';
+let notesAdded = '';
+
+function getCurrentSet() { return findSet(data, currentSetId); }
+
+function render() {
+  const set = getCurrentSet();
+  const cards = set.cards;
+  const attempts = cards.reduce((s, c) => s + (parseInt(c.attempts) || 0), 0);
+  const correct = cards.reduce((s, c) => s + (parseInt(c.correct) || 0), 0);
+  const accuracy = attempts ? Math.round(correct / attempts * 100) + '%' : '0%';
+  const dueCount = dueCards(set).length;
+  const mastered = cards.filter(c => (c.interval || 0) >= 7).length;
+
+  document.getElementById('app').innerHTML = `
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark">KZ</div><div><h1>Kaizu</h1></div></div>
+      <button class="primary-action" onclick="newSet()">+ Bộ học mới</button>
+      <div class="set-list-header"><span>Bộ học</span><span>${data.sets.length}</span></div>
+      <div class="set-list">${renderSetList()}</div>
+    </aside>
+    <main class="workspace">
+      <header class="topbar">
+        <div><p class="eyebrow">Bộ đang học</p><h2>${esc(set.title)}</h2></div>
+        <div class="topbar-actions">
+          <button class="ghost-btn" onclick="exportSet()">Xuất</button>
+          <button class="danger-btn" onclick="deleteSet()">Xóa</button>
+        </div>
+      </header>
+      <nav class="mode-tabs">${renderTabs()}</nav>
+      <section class="stats-strip">
+        <div><span>${cards.length}</span><p>Thẻ</p></div>
+        <div><span>${dueCount}</span><p>Đến hạn</p></div>
+        <div><span>${mastered}</span><p>Đã nhớ</p></div>
+        <div><span>${accuracy}</span><p>Độ chính xác</p></div>
+      </section>
+      ${renderPanel()}
+    </main>
+  `;
+}
+
+function renderSetList() {
+  return data.sets.map(s => {
+    const active = s.id === currentSetId ? ' active' : '';
+    const subject = s.subject || 'Chưa phân loại';
+    return `<div class="set-item${active}" onclick="switchSet('${s.id}')"><strong>${esc(s.title)}</strong><span>${s.cards.length} thẻ · ${esc(subject)}</span></div>`;
+  }).join('');
+}
+
+function renderTabs() {
+  const tabs = [['cards','Thẻ'],['learn','Học'],['test','Kiểm tra'],['review','Ôn tập'],['notes','Ghi chú'],['edit','Chỉnh sửa']];
+  return tabs.map(([m, label]) => `<a class="tab${m===currentMode?' active':''}" onclick="switchMode('${m}')">${label}</a>`).join('');
+}
+
+function renderPanel() {
+  const set = getCurrentSet();
+  switch(currentMode) {
+    case 'cards': return renderCards(set);
+    case 'learn': return renderLearn(set);
+    case 'test': return renderTest(set);
+    case 'review': return renderReview(set);
+    case 'notes': return renderNotes(set);
+    case 'edit': return renderEdit(set);
+    default: return renderCards(set);
+  }
+}
+
+let cardIndex = 0;
+function renderCards(set) {
+  const cards = set.cards;
+  cardIndex = Math.max(0, Math.min(cardIndex, cards.length - 1));
+  const card = cards[cardIndex];
+  return `<section class="panel active"><div class="study-stage">
+    <div class="flashcard-scene" onclick="flipCard()">
+      <div class="flashcard" id="flashcard">
+        <div class="flashcard-face flashcard-front"><p>Thuật ngữ</p><strong id="fc-front">${esc(card ? card.term : 'Chưa có thẻ')}</strong></div>
+        <div class="flashcard-face flashcard-back"><p>Định nghĩa</p><strong id="fc-back">${esc(card ? card.definition : '')}</strong></div>
+      </div>
+    </div>
+    <div class="card-controls">
+      <a class="icon-btn link-btn" onclick="prevCard()">‹</a>
+      <span id="cardCounter">${cards.length ? cardIndex + 1 : 0} / ${cards.length}</span>
+      <a class="icon-btn link-btn" onclick="nextCard()">›</a>
+    </div>
+  </div></section>`;
+}
+
+function flipCard() { document.getElementById('flashcard')?.classList.toggle('flipped'); }
+
+function prevCard() {
+  const cards = getCurrentSet().cards;
+  cardIndex = ((cardIndex - 1) % cards.length + cards.length) % cards.length;
+  render();
+}
+
+function nextCard() {
+  const cards = getCurrentSet().cards;
+  cardIndex = (cardIndex + 1) % cards.length;
+  render();
+}
+
+function renderLearn(set) {
+  const cards = set.cards;
+  const card = cards.length ? cards[Math.floor(Math.random() * cards.length)] : null;
+  let feedback = '';
+  if (feedbackMsg === 'correct') feedback = 'Đúng.';
+  else if (feedbackMsg === 'wrong') feedback = `Chưa đúng. Đáp án: ${esc(expectedAnswer)}`;
+  feedbackMsg = '';
+  return `<section class="panel active"><div class="task-layout">
+    <div class="prompt-box"><p>Trả lời định nghĩa cho thuật ngữ</p><h3>${esc(card ? card.term : 'Chưa có câu hỏi')}</h3></div>
+    <div class="answer-form">
+      <input id="learnAnswer" autocomplete="off" placeholder="Nhập câu trả lời" onkeydown="if(event.key==='Enter')submitLearn('${card?card.id:''}')" />
+      <button class="primary-action compact" onclick="submitLearn('${card?card.id:''}')">Kiểm tra</button>
+    </div>
+    <div class="feedback">${feedback}</div>
+  </div></section>`;
+}
+
+function submitLearn(cardId) {
+  const set = getCurrentSet();
+  const card = findCard(set, cardId);
+  const answer = document.getElementById('learnAnswer')?.value || '';
+  if (!card) return;
+  const isCorrect = closeAnswer(answer, card.definition);
+  card.attempts = (parseInt(card.attempts) || 0) + 1;
+  card.correct = (parseInt(card.correct) || 0) + (isCorrect ? 1 : 0);
+  saveData(data);
+  feedbackMsg = isCorrect ? 'correct' : 'wrong';
+  expectedAnswer = card.definition;
+  currentMode = 'learn';
+  render();
+    currentMode = 'learn';
+}
+
+function renderTest(set) {
+  const cards = set.cards;
+  const sample = shuffle([...cards]).slice(0, Math.min(8, cards.length));
+  const questions = sample.map((c, i) => `
+    <div class="question">
+      <label><strong>${i+1}. ${esc(c.term)}</strong></label>
+      <input id="ans_${c.id}" placeholder="Nhập định nghĩa" />
+      <input type="hidden" value="${c.id}" class="test-card-id" />
+    </div>
+  `).join('');
+  return `<section class="panel active"><div class="test-toolbar"><span id="testScore">${esc(testScore)}</span></div>
+    <div class="test-list">${questions}<button class="primary-action compact" onclick="gradeTest()">Chấm điểm</button></div>
+  </section>`;
+}
+
+function gradeTest() {
+  const set = getCurrentSet();
+  const ids = document.querySelectorAll('.test-card-id');
+  let score = 0, total = ids.length;
+  ids.forEach(el => {
+    const card = findCard(set, el.value);
+    const answer = document.getElementById('ans_' + el.value)?.value || '';
+    if (card && closeAnswer(answer, card.definition)) score++;
+  });
+  testScore = score + '/' + total;
+  render();
+}
+
+let showReviewAnswer = false;
+function renderReview(set) {
+  const due = dueCards(set);
+  const card = due[0] || null;
+  const answer = showReviewAnswer && card ? esc(card.definition) : '';
+  showReviewAnswer = false;
+  const buttons = card ? ['again:Làm lại','hard:Khó','good:Bình thường','easy:Dễ'].map(s => {
+    const [val, label] = s.split(':');
+    return `<button onclick="rateReview('${card.id}','${val}')">${label}</button>`;
+  }).join('') : '';
+  return `<section class="panel active"><div class="task-layout">
+    <div class="prompt-box"><p>Lặp lại cách quãng</p><h3>${esc(card ? card.term : 'Không có thẻ đến hạn')}</h3></div>
+    <button class="ghost-btn wide" onclick="showAnswer()">Hiện đáp án</button>
+    <div class="review-answer">${answer}</div>
+    <div class="rating-row">${buttons}</div>
+  </div></section>`;
+}
+
+function showAnswer() { showReviewAnswer = true; render(); }
+
+function rateReview(cardId, rating) {
+  const set = getCurrentSet();
+  const card = findCard(set, cardId);
+  if (!card) return;
+  let interval = parseInt(card.interval) || 0;
+  let ease = parseFloat(card.ease) || 2.5;
+  if (rating === 'again') { interval = 0; ease = Math.max(1.3, ease - 0.2); }
+  else if (rating === 'hard') { interval = Math.max(1, Math.round(interval * 1.2)); ease = Math.max(1.3, ease - 0.05); }
+  else if (rating === 'easy') { interval = Math.max(3, Math.round((interval || 1) * (ease + 0.6))); ease += 0.15; }
+  else { interval = Math.max(1, Math.round((interval || 1) * ease)); }
+  card.interval = interval;
+  card.ease = ease;
+  card.due = Math.floor(Date.now() / 1000) + interval * DAY;
+  card.attempts = (parseInt(card.attempts) || 0) + 1;
+  card.correct = (parseInt(card.correct) || 0) + (rating !== 'again' ? 1 : 0);
+  saveData(data);
+  render();
+}
+
+function renderNotes(set) {
+  let message = '';
+  if (notesAdded) message = `Đã tạo ${esc(notesAdded)} thẻ mới.`;
+  notesAdded = '';
+  return `<section class="panel active"><div class="notes-grid">
+    <div class="notes-editor">
+      <label for="notesInput">Ghi chú</label>
+      <textarea id="notesInput" placeholder="Photosynthesis - Quá trình cây tạo glucose từ ánh sáng">${esc(set.notes || '')}</textarea>
+      <button class="primary-action compact" onclick="extractNotes()">Tạo thẻ từ ghi chú</button>
+      <div class="feedback">${message}</div>
+    </div>
+    <div class="notes-tips"><h3>Định dạng nhận diện</h3><p>Mỗi dòng dùng một mẫu: thuật ngữ - định nghĩa, thuật ngữ: định nghĩa, hoặc thuật ngữ = định nghĩa.</p></div>
+  </div></section>`;
+}
+
+function extractNotes() {
+  const set = getCurrentSet();
+  const notes = document.getElementById('notesInput')?.value || '';
+  set.notes = notes;
+  const knownTerms = new Set(set.cards.map(c => normalize(c.term)));
+  let added = 0;
+  for (const line of notes.splitlines()) {
+    const match = line.trim().match(/^(.+?)\s*(?:-|:|=)\s*(.+)$/);
+    if (!match) continue;
+    const term = match[1].trim(), def = match[2].trim();
+    if (term && def && !knownTerms.has(normalize(term))) {
+      set.cards.push(makeCard(term, def));
+      knownTerms.add(normalize(term));
+      added++;
+    }
+  }
+  saveData(data);
+  notesAdded = String(added);
+  render();
+}
+
+function renderEdit(set) {
+  const rows = set.cards.map(c => `
+    <div class="term-row">
+      <input type="hidden" value="${c.id}" class="card-id-input" />
+      <input placeholder="Thuật ngữ" value="${esc(c.term)}" class="term-input" />
+      <input placeholder="Định nghĩa" value="${esc(c.definition)}" class="def-input" />
+      <button class="danger-btn" onclick="this.parentElement.remove()" style="min-height:36px;padding:0 8px;">✕</button>
+    </div>
+  `).join('');
+  return `<section class="panel active">
+    <div class="set-form">
+      <input type="hidden" id="editSetId" value="${esc(set.id)}" />
+      <div class="field-row">
+        <label>Tên bộ học<input id="editTitle" value="${esc(set.title)}" /></label>
+        <label>Môn học<input id="editSubject" value="${esc(set.subject || '')}" /></label>
+      </div>
+      <label>Ghi chú<textarea id="editNotes">${esc(set.notes || '')}</textarea></label>
+      <div class="terms-header"><h3>Thuật ngữ</h3></div>
+      <div class="terms-table" id="termsTable">${rows}</div>
+      <button class="primary-action compact" onclick="saveSet()">Lưu thay đổi</button>
+      <div class="feedback" id="editFeedback"></div>
+    </div>
+    <div class="set-form add-card-form">
+      <button class="ghost-btn" onclick="addBlankCard()">+ Thẻ</button>
+    </div>
+  </section>`;
+}
+
+function addBlankCard() {
+  const set = getCurrentSet();
+  set.cards.push(makeCard('Thuật ngữ mới', 'Định nghĩa mới'));
+  saveData(data);
+  render();
+}
+
+function saveSet() {
+  const set = getCurrentSet();
+  set.title = document.getElementById('editTitle')?.value?.trim() || 'Chưa đặt tên';
+  set.subject = document.getElementById('editSubject')?.value?.trim() || '';
+  set.notes = document.getElementById('editNotes')?.value || '';
+  const rows = document.querySelectorAll('.term-row');
+  const existing = {};
+  set.cards.forEach(c => existing[c.id] = c);
+  const cards = [];
+  rows.forEach(row => {
+    const cardId = row.querySelector('.card-id-input')?.value || uuid();
+    const term = row.querySelector('.term-input')?.value?.trim() || '';
+    const def = row.querySelector('.def-input')?.value?.trim() || '';
+    if (!term || !def) return;
+    const card = existing[cardId] || makeCard();
+    card.id = cardId; card.term = term; card.definition = def;
+    cards.push(card);
+  });
+  set.cards = cards;
+  saveData(data);
+  const fb = document.getElementById('editFeedback');
+  if (fb) fb.textContent = 'Đã lưu thay đổi.';
+}
+
+function newSet() {
+  const set = { id: uuid(), title: 'Bộ học mới', subject: '', notes: '', cards: [makeCard('Thuật ngữ mới', 'Định nghĩa mới')] };
+  data.sets.unshift(set);
+  data.active_set_id = set.id;
+  currentSetId = set.id;
+  saveData(data);
+  currentMode = 'edit';
+  render();
+}
+
+function deleteSet() {
+  if (data.sets.length <= 1) return;
+  data.sets = data.sets.filter(s => s.id !== currentSetId);
+  data.active_set_id = data.sets[0].id;
+  currentSetId = data.active_set_id;
+  saveData(data);
+  currentMode = 'cards';
+  render();
+}
+
+function switchSet(id) {
+  currentSetId = id;
+  data.active_set_id = id;
+  saveData(data);
+  feedbackMsg = ''; testScore = ''; notesAdded = '';
+  render();
+}
+
+function switchMode(mode) {
+  currentMode = mode;
+  feedbackMsg = ''; testScore = ''; notesAdded = ''; showReviewAnswer = false;
+  render();
+}
+
+function exportSet() {
+  const set = getCurrentSet();
+  const blob = new Blob([JSON.stringify(set, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const name = (set.title || 'study-set').replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-|-$/g, '') || 'study-set';
+  a.href = url; a.download = name + '.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+render();
+</script>
+</body>
+</html>

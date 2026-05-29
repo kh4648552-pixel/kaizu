@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Kaizu" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#0284c7</item>
+        <item name="colorPrimaryDark">#0369a1</item>
+        <item name="colorAccent">#0d9488</item>
+        <item name="android:windowBackground">#f8fafc</item>
+        <item name="android:statusBarColor">#0369a1</item>
+        <item name="android:navigationBarColor">#0369a1</item>
+    </style>
+</resources>
