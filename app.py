@@ -10,12 +10,10 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlencode, urlparse
 
-
 ROOT = Path(__file__).parent
 DATA_FILE = ROOT / "data.json"
 STYLE_FILE = ROOT / "styles.css"
 DAY = 24 * 60 * 60
-
 
 def make_card(term: str = "", definition: str = "") -> dict:
     return {
