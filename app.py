@@ -464,6 +464,8 @@ def render_edit(study_set: dict, query: dict[str, list[str]]) -> str:
     </section>"""
 
 if __name__ == "__main__":
-    server = ThreadingHTTPServer(("localhost", 8080), StudyHandler)
-    print("Máy chủ đang chạy tại http://localhost:8080")
+    import os
+    port = int(os.environ.get("PORT", 8080))
+    server = ThreadingHTTPServer(("0.0.0.0", port), StudyHandler)
+    print(f"Máy chủ đang chạy tại http://0.0.0.0:{port}")
     server.serve_forever()
